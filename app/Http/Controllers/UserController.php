@@ -27,14 +27,19 @@ class UserController extends Controller
             isArray($userInfos) &&
             Auth::attempt(['email' => $userInfos['email'], 'password' => $userInfos['password']])){
 
-                $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
-                return response()->json($user, 201);
+                // $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+                $userData = (object) [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'created_at' => $user->created_at
+                ];
+                return response()->json($userData, 201);
             }
-
             return response()->json(['data' => $userInfos], 201);
 
         } catch(Exception $ex){
-            return response()->json([
+            return response()->json((object)[
                 'message' => $ex->getMessage()
             ], 500);
         }
@@ -65,7 +70,7 @@ class UserController extends Controller
         ], 200);
 
         } catch (Exception $ex){
-            return response()->json([
+            return response()->json((object)[
                 'message' => $ex->getMessage()
             ], 500);
         }
@@ -80,31 +85,30 @@ class UserController extends Controller
         try{
             $module = Module::find($module_id);
             if (!$module) {
-                return response()->json([
+                return response()->json((object)[
                     'message' => 'Module not found'
                 ],404);
             }
 
             $user = Auth::user();
+            if (!$user->active_modules) $user->active_modules = [];
             if (!in_array($module_id, $user->active_modules)){
-
+                $activeModules = $user->active_modules;
                 array_push(
-                    $user->active_modules,
-                    $module_id
+                    $activeModules,
+                    intval($module_id)
                 );
-
-                User::update([
-                    'active_modules' => $user->active_modules
-                ]);
+                $user->active_modules = $activeModules;
+                $user->save();
             }
 
-            return response()->json([
+            return response()->json((object)[
                 "message" => "Module activated"
             ], 200);
 
         } catch(Exception $ex){
-            return response()->json([
-                'message' => 'Something went wrong'
+            return response()->json((object)[
+                'message' => $ex->getMessage()
             ],500);
         }
     }
@@ -118,28 +122,26 @@ class UserController extends Controller
         try{
             $module = Module::find($module_id);
             if (!$module) {
-                return response()->json([
+                return response()->json((object)[
                     'message' => 'Module not found'
                 ],404);
             }
 
             $user = Auth::user();
+            if (!$user->active_modules) $user->active_modules = [];
             if (in_array($module_id, $user->active_modules)){
 
                 $user->active_modules = array_diff($user->active_modules, [$module_id]);
-
-                User::update([
-                    'active_modules' => $user->active_modules
-                ]);
+                $user->save();
             }
 
-            return response()->json([
-                "message" => "Module activated"
+            return response()->json((object)[
+                "message" => "Module deactivated"
             ], 200);
 
         } catch(Exception $ex){
-            return response()->json([
-                'message' => 'Something went wrong'
+            return response()->json((object)[
+                'message' => $ex->getMessage(),
             ],500);
         }
     }
