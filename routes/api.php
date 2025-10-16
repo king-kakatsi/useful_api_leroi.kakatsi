@@ -17,5 +17,6 @@ Route::post('/modules/{id}/deactivate', [UserController::class, 'deactivateUserM
 
 Route::get('/links', [ShortUrlController::class, 'index'])->middleware('auth:sanctum', CheckModuleActive::class);
 Route::post('/shorten', [ShortUrlController::class, 'store'])->middleware('auth:sanctum', CheckModuleActive::class);
+Route::get('/s/{code}', [ShortUrlController::class, 'goToOriginal'])->middleware(CheckModuleActive::class);
 
 
