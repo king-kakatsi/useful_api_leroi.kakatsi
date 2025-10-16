@@ -19,7 +19,7 @@ class CheckModuleActive
         $activeModule = Auth::user()->active_modules;
         if (!$activeModule || !in_array($request->id, $activeModule)){
             return response()->json((object)[
-                'message' => 'Action cancelled! Module is inactive.'
+                "error" => "Module inactive. Please activate this module to use it."
             ], 403);
         }
         return $next($request);
