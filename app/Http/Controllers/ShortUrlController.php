@@ -64,7 +64,7 @@ class ShortUrlController extends Controller
     {
         $link = ShortUrl::where('custom_code', $code)->first();
 
-        return Redirect::to($link->original_url);
+        Redirect::to($link->original_url);
         return response()->json(
             $link,302);
     }
