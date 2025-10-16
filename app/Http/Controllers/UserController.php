@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegistrationRequest;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 use function PHPUnit\Framework\isArray;
 
@@ -17,21 +19,23 @@ class UserController extends Controller
      */
     public function register(UserRegistrationRequest $request){
         try{
-            $validatedFields = $request->validated();
-            $user = User::create($validatedFields);
+            $userInfos = $request->validated();
+            $user = User::create($userInfos);
 
-            if ($user && $validatedFields &&
-            isArray($validatedFields) &&
-            Auth::attempt(['email' => $validatedFields['email'], 'password' => $validatedFields['password']])){
+            if ($user && $userInfos &&
+            isArray($userInfos) &&
+            Auth::attempt(['email' => $userInfos['email'], 'password' => $userInfos['password']])){
 
                 $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
                 return response()->json($user, 201);
             }
 
-            return response()->json(['data' => $validatedFields], 201);
+            return response()->json(['data' => $userInfos], 201);
 
         } catch(Exception $ex){
-            return response()->json(["exception" => $ex], 401);
+            return response()->json([
+                'message' => $ex->getMessage()
+            ], 500);
         }
     }
 
@@ -39,8 +43,31 @@ class UserController extends Controller
     /**
      * Login a user if data is valid
      */
-    public function login(){
-        return response()->json(['test' => 'succeed'], 201);
+    public function login(UserLoginRequest $request){
+
+        try{
+         $loginUserData = $request->validated();
+        $user = User::where('email',$loginUserData['email'])->first();
+
+        if(!$user || !Hash::check($loginUserData['password'],$user->password)){
+
+            return response()->json([
+                'message' => 'Invalid Credentials'
+            ],401);
+        }
+
+        $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user_id' => $user->id,
+        ], 200);
+
+        } catch (Exception $ex){
+            return response()->json([
+                'message' => $ex->getMessage()
+            ], 500);
+        }
     }
 
 
