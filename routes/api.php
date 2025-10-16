@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\ShortUrlController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckModuleActive;
 use Illuminate\Support\Facades\Route;
@@ -12,4 +13,9 @@ Route::get('/modules', [ModuleController::class, 'index'])->middleware('auth:san
 
 Route::post('/modules/{id}/activate', [UserController::class, 'activateUserModule'])->middleware('auth:sanctum');
 Route::post('/modules/{id}/deactivate', [UserController::class, 'deactivateUserModule'])->middleware('auth:sanctum');
-// Route::post('/modules/{id}/deactivate', [UserController::class, 'deactivateUserModule'])->middleware('auth:sanctum', CheckModuleActive::class);
+
+
+Route::get('/links', [ShortUrlController::class, 'index'])->middleware('auth:sanctum', CheckModuleActive::class);
+Route::post('/shorten', [ShortUrlController::class, 'store'])->middleware('auth:sanctum', CheckModuleActive::class);
+
+

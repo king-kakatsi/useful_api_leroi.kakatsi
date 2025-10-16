@@ -36,7 +36,7 @@ class UserController extends Controller
                 ];
                 return response()->json($userData, 201);
             }
-            return response()->json(['data' => $userInfos], 201);
+            return response()->json($userInfos, 201);
 
         } catch(Exception $ex){
             return response()->json((object)[
