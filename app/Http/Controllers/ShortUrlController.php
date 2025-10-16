@@ -7,6 +7,7 @@ use App\Models\ShortUrl;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 
 class ShortUrlController extends Controller
@@ -62,9 +63,10 @@ class ShortUrlController extends Controller
     public function goToOriginal($code)
     {
         $link = ShortUrl::where('custom_code', $code)->first();
-        return response()->json((object)[
-            $link
-        ],200);
+
+        return Redirect::to($link->original_url);
+        return response()->json(
+            $link,302);
     }
 
     /**
