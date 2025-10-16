@@ -17,7 +17,14 @@ class CheckModuleActive
     public function handle(Request $request, Closure $next): Response
     {
         $activeModule = Auth::user()->active_modules;
-        if (!$activeModule || !in_array($request->id, $activeModule)){
+        $moduleId = $request->id;
+        if (!$moduleId){
+
+            if (str_contains($request->url(), 'link') ||
+            str_contains($request->url(), 'shorten'))$moduleId = 1;
+        }
+
+        if (!$activeModule || !in_array($moduleId, $activeModule)){
             return response()->json((object)[
                 "error" => "Module inactive. Please activate this module to use it."
             ], 403);
