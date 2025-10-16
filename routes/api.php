@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,8 +11,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
-Route::get('/modules', [UserController::class, 'register'])->middleware('auth:sanctum');
+Route::get('/modules', [ModuleController::class, 'index'])->middleware('auth:sanctum');
 
-Route::post('/modules/:id/activate', [UserController::class, 'register'])->middleware('auth:sanctum');
-Route::post('/modules/:id/deactivate', [UserController::class, 'register'])->middleware('auth:sanctum');
+Route::post('/modules/:id/activate', [UserController::class, 'activateUserModule'])->middleware('auth:sanctum');
+Route::post('/modules/:id/deactivate', [UserController::class, 'deactivateUserModule'])->middleware('auth:sanctum');
 // Route::get('/register', [UserController::class, 'register']);

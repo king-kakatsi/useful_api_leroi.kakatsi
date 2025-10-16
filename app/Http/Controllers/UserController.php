@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegistrationRequest;
+use App\Models\Module;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -72,7 +73,80 @@ class UserController extends Controller
 
 
     /**
-     * Display a listing of the resource.
+     * Activate module for current user.
+     */
+    public function activateUserModule(Request $request, $module_id)
+    {
+        try{
+            $module = Module::find($module_id);
+            if (!$module) {
+                return response()->json([
+                    'message' => 'Module not found'
+                ],404);
+            }
+
+            $user = Auth::user();
+            if (!in_array($module_id, $user->active_modules)){
+
+                array_push(
+                    $user->active_modules,
+                    $module_id
+                );
+
+                User::update([
+                    'active_modules' => $user->active_modules
+                ]);
+            }
+
+            return response()->json([
+                "message" => "Module activated"
+            ], 200);
+
+        } catch(Exception $ex){
+            return response()->json([
+                'message' => 'Something went wrong'
+            ],500);
+        }
+    }
+
+
+    /**
+     * Deactivate module for current user.
+     */
+    public function deactivateUserModule(Request $request, $module_id)
+    {
+        try{
+            $module = Module::find($module_id);
+            if (!$module) {
+                return response()->json([
+                    'message' => 'Module not found'
+                ],404);
+            }
+
+            $user = Auth::user();
+            if (in_array($module_id, $user->active_modules)){
+
+                $user->active_modules = array_diff($user->active_modules, [$module_id]);
+
+                User::update([
+                    'active_modules' => $user->active_modules
+                ]);
+            }
+
+            return response()->json([
+                "message" => "Module activated"
+            ], 200);
+
+        } catch(Exception $ex){
+            return response()->json([
+                'message' => 'Something went wrong'
+            ],500);
+        }
+    }
+
+
+    /**
+     * Display the user's list
      */
     public function index()
     {
