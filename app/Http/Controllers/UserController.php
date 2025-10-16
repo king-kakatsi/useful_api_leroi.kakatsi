@@ -62,6 +62,7 @@ class UserController extends Controller
             ],401);
         }
 
+        Auth::attempt(['email' => $user['email'], 'password' => $user['password']]);
         $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
 
         return response()->json([
