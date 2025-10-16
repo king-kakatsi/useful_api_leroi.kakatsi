@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRegistrationRequest;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use function PHPUnit\Framework\isArray;
 
 class UserController extends Controller
 {
@@ -13,13 +17,21 @@ class UserController extends Controller
      */
     public function register(UserRegistrationRequest $request){
         try{
-            
             $validatedFields = $request->validated();
+            $user = User::create($validatedFields);
+
+            if ($user && $validatedFields &&
+            isArray($validatedFields) &&
+            Auth::attempt(['email' => $validatedFields['email'], 'password' => $validatedFields['password']])){
+
+                $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+                return response()->json($user, 201);
+            }
+
             return response()->json(['data' => $validatedFields], 201);
 
         } catch(Exception $ex){
-            $validatedFields = $request->validated();
-            return response()->json([$ex, $validatedFields], 401);
+            return response()->json(["exception" => $ex], 401);
         }
     }
 
