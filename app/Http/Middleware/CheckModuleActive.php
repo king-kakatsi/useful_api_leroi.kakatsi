@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,15 +17,25 @@ class CheckModuleActive
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $activeModule = Auth::user()->active_modules;
-        $moduleId = $request->id;
-        if (!$moduleId){
+        try{
+            $activeModule = Auth::user()->active_modules;
+            $moduleId = $request->id;
+            if (!$moduleId){
 
-            if (str_contains($request->url(), 'link') ||
-            str_contains($request->url(), 'shorten'))$moduleId = 1;
-        }
+                if (str_contains($request->url(), 'link') ||
+                str_contains($request->url(), 'shorten') ||
+                str_contains($request->url(), 'api/s/')
+                ){
+                    $moduleId = 1;
+                }
+            }
 
-        if (!$activeModule || !in_array($moduleId, $activeModule)){
+            if (!$activeModule || !in_array($moduleId, $activeModule)){
+                return response()->json((object)[
+                    "error" => "Module inactive. Please activate this module to use it."
+                ], 403);
+            }
+        } catch (Exception $ex){
             return response()->json((object)[
                 "error" => "Module inactive. Please activate this module to use it."
             ], 403);

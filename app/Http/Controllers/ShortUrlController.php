@@ -16,7 +16,7 @@ class ShortUrlController extends Controller
      */
     public function index()
     {
-        $links = ShortUrl::where('user_id',Auth::user()->id)->pluck('user_id')->toArray();
+        $links = ShortUrl::all()->where('user_id',Auth::user()->id);
         return response()->json((object)[
             $links
         ],200);
@@ -44,7 +44,7 @@ class ShortUrlController extends Controller
                 $validatedFields['custom_code'] = Str::random(10);
                 // TODO: check if this already exists in db
             }
-            
+
             $link = ShortUrl::create($validatedFields);
             unset($link->updated_at);
             return response()->json($link, 201);
@@ -57,11 +57,14 @@ class ShortUrlController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Redirects to the original link.
      */
-    public function show(ShortUrl $shortUrl)
+    public function goToOriginal($code)
     {
-        //
+        $link = ShortUrl::where('custom_code', $code)->first();
+        return response()->json((object)[
+            $link
+        ],200);
     }
 
     /**
