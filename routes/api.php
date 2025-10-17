@@ -15,8 +15,9 @@ Route::post('/modules/{id}/activate', [UserController::class, 'activateUserModul
 Route::post('/modules/{id}/deactivate', [UserController::class, 'deactivateUserModule'])->middleware('auth:sanctum');
 
 
-Route::get('/links', [ShortUrlController::class, 'index'])->middleware('auth:sanctum', CheckModuleActive::class);
-Route::post('/shorten', [ShortUrlController::class, 'store'])->middleware('auth:sanctum', CheckModuleActive::class);
-Route::get('/s/{code}', [ShortUrlController::class, 'goToOriginal'])->middleware(CheckModuleActive::class);
+Route::get('/links', [ShortUrlController::class, 'index'])->middleware('auth:sanctum', [CheckModuleActive::class, 1]);
+Route::post('/shorten', [ShortUrlController::class, 'store'])->middleware('auth:sanctum', [CheckModuleActive::class, 1]);
+Route::get('/s/{code}', [ShortUrlController::class, 'goToOriginal'])->middleware([CheckModuleActive::class, 1]);
+Route::get('/links/{id}', [ShortUrlController::class, 'destroy'])->middleware('auth:sanctum', [CheckModuleActive::class, 1]);
 
 

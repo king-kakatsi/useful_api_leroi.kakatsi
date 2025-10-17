@@ -15,12 +15,12 @@ class CheckModuleActive
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, $moduleId): Response
     {
         try{
             $activeModule = Auth::user()->active_modules;
-            $moduleId = $request->id;
-            if (!$moduleId){
+            // $moduleId = $request->id;
+            /* if (!$moduleId){
 
                 if (str_contains($request->url(), 'link') ||
                 str_contains($request->url(), 'shorten') ||
@@ -28,7 +28,7 @@ class CheckModuleActive
                 ){
                     $moduleId = 1;
                 }
-            }
+            } */
 
             if (!$activeModule || !in_array($moduleId, $activeModule)){
                 return response()->json((object)[

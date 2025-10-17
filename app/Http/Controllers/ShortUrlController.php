@@ -63,33 +63,27 @@ class ShortUrlController extends Controller
     public function goToOriginal($code)
     {
         $link = ShortUrl::where('custom_code', $code)->first();
-
-        Redirect::to($link->original_url);
-        return response()->json(
-            $link,302);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ShortUrl $shortUrl)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ShortUrl $shortUrl)
-    {
-        //
+        $link->clicks += 1;
+        $link->save();
+        Redirect::to($link->original_url, 302);
+        return response()->json($link,302);
     }
 
     /**
      * Remove the specified resource from storage.
-     */
+    */
     public function destroy(ShortUrl $shortUrl)
     {
-        //
+        try{
+            if ($shortUrl->user_id === Auth::user()->id){
+                $shortUrl->delete();
+                return response()->json((object)[
+                    'message' => "Link deleted successfully"
+                ], 200);
+            }
+            return response()->json(404);
+        } catch (Exception $ex){
+            return response()->json(404);
+        }
     }
 }
