@@ -105,7 +105,7 @@ export const useAuthStore = defineStore('auth', {
       initAxios();
       saveInLocalStorage('api_exercise_user_token', '');
       this.isSignedIn = true;
-      // PersistData();
+      this.getAllUsers();
       return true;
     }
     return false;

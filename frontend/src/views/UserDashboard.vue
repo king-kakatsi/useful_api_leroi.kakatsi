@@ -8,11 +8,12 @@ const router = useRouter();
 if (!authStore.isSignedIn){
   router.push('/login');
 }
-
 </script>
 
 <template>
   <main>
-    <h1>Hey let's gooo</h1>
+    <ul>
+      <li v-for="user in authStore.allUsers" :key="user?.id">{{ user?.name }}</li>
+    </ul>
   </main>
 </template>
