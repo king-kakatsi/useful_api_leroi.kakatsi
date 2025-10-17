@@ -1,24 +1,40 @@
 <script setup>
-
+import { useToast } from 'vue-toastification';
 import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router';
+// import { onMounted } from 'vue';
 const authStore = useAuthStore();
+const toast = useToast();
+const router = useRouter();
+
+console.log('DEBUG',authStore.isSignedIn)
+
 
 async function login(){
   console.log('registration has started...');
-  const isSuccessful = await authStore.register();
+  const isSuccessful = await authStore.login();
+
   if (isSuccessful){
-    console.log('Registration succeeded');
+    console.log('Logged in successfully');
+    toast.success('Logged in successfully');
+    router.push('/');
+
   } else{
-    console.log('Registration failed');
+    console.log('Login failed');
+    toast.error('Login failed');
   }
 }
+
+
+
+
 </script>
 
 <template>
 
 <div class="flex justify-center my-20 md:my-30">
 
-
+{{ authStore.isSignedIn }}
   <div class="shadow-lg rounded-lg w-100 px-4 py-10 bg-gray-100">
 
     <!-- // Title -->
@@ -29,12 +45,12 @@ async function login(){
 
       <div class="flex flex-col">
         <label for="email" class="font-semibold text-md md:text-lg text-gray-600 mx-1">Email</label>
-        <input class="border-1 rounded-md border-gray-400 focus:border-emerald-600 duration-300 py-2 px-4" type="email" id="email" placeholder="example@gmail.com" name="email">
+        <input class="border-1 rounded-md border-gray-400 focus:border-emerald-600 duration-300 py-2 px-4" type="email" id="email" placeholder="example@gmail.com" name="email" v-model="authStore.loginInfos.email">
       </div>
 
       <div class="flex flex-col">
         <label for="password" class="font-semibold text-md md:text-lg text-gray-600 mx-1">Password</label>
-        <input class="border-1 rounded-md border-gray-400 focus:border-emerald-600 duration-300 py-2 px-4" type="text" id="password" placeholder="********" name="password">
+        <input class="border-1 rounded-md border-gray-400 focus:border-emerald-600 duration-300 py-2 px-4" type="password" id="password" placeholder="********" name="password" v-model="authStore.loginInfos.password">
         <p class="text-pink-700 text-xs md:text-sm mt-2">Must be at least 8 characters</p>
       </div>
 

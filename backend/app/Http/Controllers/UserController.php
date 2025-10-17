@@ -35,6 +35,7 @@ class UserController extends Controller
                 return response()->json([$userData, $token], 201);
             }
 
+            $user->delete();
             return response()->json((object)[
                 'message' => 'process failed'
             ], 422);

@@ -1,17 +1,33 @@
 <script setup>
-
+import { useToast } from 'vue-toastification';
 import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router';
+import { onMounted } from 'vue';
 const authStore = useAuthStore();
+const toast = useToast();
+const router = useRouter();
+
+
 
 async function register(){
   console.log('registration has started...');
   const isSuccessful = await authStore.register();
   if (isSuccessful){
     console.log('Registration succeeded');
+    toast.success('Registration succeeded');
+    router.push('/');
   } else{
     console.log('Registration failed');
+    toast.error('Registration failed');
   }
 }
+
+
+onMounted(()=>{
+  if (authStore.isSignedIn){
+    router.push('/');
+  }
+})
 
 </script>
 

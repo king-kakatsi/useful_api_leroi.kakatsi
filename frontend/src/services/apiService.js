@@ -75,6 +75,18 @@ export async function storeWithApi(endPoint, data) {
 }
 
 
+export async function postWithApi(endPoint, data, successStatus = 200) {
+        try{
+            const result = await api.post(endPoint, data);
+            if (result.status === successStatus) return [true, result.data]
+            return [false, result.data]
+        }catch(error){
+          console.log(error)
+            return[false,error.response.data]
+        }
+}
+
+
 
 
 
