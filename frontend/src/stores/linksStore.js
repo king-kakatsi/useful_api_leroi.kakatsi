@@ -12,10 +12,10 @@ import { defineStore } from 'pinia'
 import { useUserStore } from './user'
 // import { ref } from 'vue';
 
-const localCommentsKey = 'yomunity_comments'
+const localCommentsKey = 'api_project_comments'
 const commentEndPoint = 'comments/'
 
-export const useCommentsStore = defineStore('yomunityComments', {
+export const useCommentsStore = defineStore('api_projectComments', {
   state: () => ({
     comments: [],
     isCommentFormClosed: true,

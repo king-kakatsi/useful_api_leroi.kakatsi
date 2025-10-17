@@ -22,22 +22,22 @@ class UserController extends Controller
         try{
             $userInfos = $request->validated();
             $user = User::create($userInfos);
-
-            if ($user && $userInfos &&
-            isArray($userInfos) &&
+            if ($userInfos &&
             Auth::attempt(['email' => $userInfos['email'], 'password' => $userInfos['password']])){
 
-                // $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+                $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
                 $userData = (object) [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'created_at' => $user->created_at
                 ];
-                return response()->json($userData, 201);
+                return response()->json([$userData, $token], 201);
             }
-            return response()->json($userInfos, 201);
 
+            return response()->json((object)[
+                'message' => 'process failed'
+            ], 422);
         } catch(Exception $ex){
             return response()->json((object)[
                 'message' => $ex->getMessage()
@@ -153,7 +153,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        return response()->json($users,200);
     }
 
     /**

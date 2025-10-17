@@ -1,12 +1,14 @@
 import axios from "axios";
 
-
 const baseURL = 'http://127.0.0.1:8000/api/'
 
 /**
  * *Axios instance for using api endpoints*
  */
-const api = axios.create({
+
+export function initAxios(){
+
+  const api = axios.create({
     baseURL: baseURL, // the backend base api
     timeout: 15000, // 15s delay max
     headers: {
@@ -14,12 +16,16 @@ const api = axios.create({
     }})
 
     api.interceptors.request.use((config) => {
-      const token = localStorage.getItem('yomunity_token')
+      const token = localStorage.getItem('api_exercise_user_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
       return config
     })
+    return api;
+}
+
+let api = initAxios();
 export default api;
 
 
@@ -40,7 +46,7 @@ export async function fetchAllFromApi(endPoint) {
             return [true, data]
         }
     }
-    return [false, result.data?.errors];
+    return [false, result.data?.message];
 }
 
 
